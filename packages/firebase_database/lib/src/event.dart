@@ -24,7 +24,7 @@ class Event {
 
   static Event fromWebSnapshot(firebase.QueryEvent e) {
     return Event._({
-      'snapshot': DataSnapshot.fromWebSnapshot(e.snapshot),
+      'snapshot': DataSnapshot.fromWebSnapshot(e.snapshot)._data,
       'previousSiblingKey': e.prevChildKey,
     });
   }
