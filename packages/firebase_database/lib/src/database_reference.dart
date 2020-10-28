@@ -70,6 +70,9 @@ class DatabaseReference extends Query {
   /// Passing null for the new value means all data at this location or any
   /// child location will be deleted.
   Future<void> set(dynamic value, {dynamic priority}) {
+    if (kIsWeb) {
+      return firebase.database().ref(path).set(value);
+    }
     return _database._channel.invokeMethod<void>(
       'DatabaseReference#set',
       <String, dynamic>{
@@ -84,6 +87,9 @@ class DatabaseReference extends Query {
 
   /// Update the node with the `value`
   Future<void> update(Map<String, dynamic> value) {
+    if (kIsWeb) {
+      return firebase.database().ref(path).set(value);
+    }
     return _database._channel.invokeMethod<void>(
       'DatabaseReference#update',
       <String, dynamic>{
@@ -148,6 +154,19 @@ class DatabaseReference extends Query {
       {Duration timeout = const Duration(seconds: 5)}) async {
     assert(timeout.inMilliseconds > 0,
         'Transaction timeout must be more than 0 milliseconds.');
+
+    if (kIsWeb) {
+      return firebase.database().ref(path).transaction((val) {
+        return transactionHandler(val);
+      }).then((transaction) {
+        final DataSnapshot snapshot = DataSnapshot.fromWebSnapshot(transaction.snapshot);
+        return TransactionResult._(null, transaction.committed, snapshot);
+      })
+      .catchError((error) {
+        return TransactionResult._(error, false, null);
+      });
+
+    }
 
     final Completer<TransactionResult> completer =
         Completer<TransactionResult>();

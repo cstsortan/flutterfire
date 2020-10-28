@@ -41,6 +41,26 @@ class Query {
   }
 
   Stream<Event> _observe(_EventType eventType) {
+    if (kIsWeb) {
+      firebase.DatabaseReference ref = firebase.database().ref(path);
+      switch (eventType) {
+        case _EventType.childAdded:
+          return ref.onChildAdded.map((event) => Event.fromWebSnapshot(event));
+          break;
+        case _EventType.childRemoved:
+          return ref.onChildRemoved.map((event) => Event.fromWebSnapshot(event));
+          break;
+        case _EventType.childChanged:
+          return ref.onChildChanged.map((event) => Event.fromWebSnapshot(event));
+          break;
+        case _EventType.childMoved:
+          return ref.onChildMoved.map((event) => Event.fromWebSnapshot(event));
+          break;
+        case _EventType.value:
+          return ref.onValue.map((event) => Event.fromWebSnapshot(event));
+          break;
+      }
+    }
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.

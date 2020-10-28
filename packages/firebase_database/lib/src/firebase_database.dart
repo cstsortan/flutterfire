@@ -12,7 +12,7 @@ class FirebaseDatabase {
   ///
   /// If [app] is specified, its options should include a [databaseURL].
   FirebaseDatabase({this.app, this.databaseURL}) {
-    if (_initialized) return;
+    if (_initialized || kIsWeb) return;
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'Event':

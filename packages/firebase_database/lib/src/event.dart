@@ -21,6 +21,13 @@ class Event {
   Map<dynamic, dynamic> _data;
 
   String get previousSiblingKey => _data['previousSiblingKey'];
+
+  static Event fromWebSnapshot(firebase.QueryEvent e) {
+    return Event._({
+      'snapshot': DataSnapshot.fromWebSnapshot(e.snapshot),
+      'previousSiblingKey': e.prevChildKey,
+    });
+  }
 }
 
 /// A DataSnapshot contains data from a Firebase Database location.
@@ -35,6 +42,13 @@ class DataSnapshot {
 
   /// Returns the contents of this data snapshot as native types.
   dynamic get value => _data['value'];
+
+  static DataSnapshot fromWebSnapshot(firebase.DataSnapshot snap) {
+    return DataSnapshot._({
+      'key': snap.key,
+      'value': snap.val(),
+    });
+  }
 }
 
 class MutableData {
