@@ -4,12 +4,21 @@
 
 // ignore_for_file: public_member_api_docs
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
 // You can also test with your own ad unit IDs by registering your device as a
 // test device. Check the logs for your device's ID value.
 const String testDevice = 'YOUR_DEVICE_ID';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -140,7 +149,11 @@ class _MyAppState extends State<MyApp> {
                     _nativeAd ??= createNativeAd();
                     _nativeAd
                       ..load()
-                      ..show();
+                      ..show(
+                        anchorType: Platform.isAndroid
+                            ? AnchorType.bottom
+                            : AnchorType.top,
+                      );
                   },
                 ),
                 RaisedButton(
@@ -177,8 +190,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MyApp());
 }
